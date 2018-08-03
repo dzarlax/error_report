@@ -17,6 +17,41 @@ daily_r = ('C:/Users/313457/Desktop/p_report/Daily report.pdf')
 hourly_r = ('C:/Users/313457/Desktop/p_report/Hourly report.pdf')
 
 
+# Total converting to a table in PDF
+def print_top(top):
+    total_rows, total_cols = top.shape  # There were 3 columns in my df
+
+    rows_per_page = 40  # Assign a page cut off length
+    rows_printed = 0
+    page_number = 1
+
+    while (total_rows > 0):
+        # put the table on a correctly sized figure
+        fig = plt.figure(figsize=(8.5, 11))
+        plt.gca().axis('off')
+        matplotlib_tab = pd.plotting.table(plt.gca(), top.iloc[rows_printed:rows_printed + rows_per_page],
+                                           loc='upper center', colWidths=[0.2, 0.2, 0.2])
+
+        # Give you cells some styling
+        table_props = matplotlib_tab.properties()
+        table_cells = table_props['child_artists']  # I have no clue why child_artists works
+        for cell in table_cells:
+            cell.set_height(0.024)
+            cell.set_fontsize(12)
+
+        # Add a header and footer with page number
+        fig.text(4.25 / 8.5, 10.5 / 11., "Top errors", ha='center', fontsize=12)
+        fig.text(4.25 / 8.5, 0.5 / 11., 'A' + str(page_number), ha='center', fontsize=12)
+
+        pdf.savefig()
+        plt.clf()
+
+        # Update variables
+        rows_printed += rows_per_page
+        total_rows -= rows_per_page
+        page_number += 1
+    return(0)
+
 # Plotting and saving top graphics into PDF
 def err_graph(top,data):
     error = 0
@@ -86,31 +121,7 @@ with PdfPages(daily_r) as pdf:
     rows_printed = 0
     page_number = 1
 
-    while (total_rows > 0):
-        # put the table on a correctly sized figure
-        fig = plt.figure(figsize=(8.5, 11))
-        plt.gca().axis('off')
-        matplotlib_tab = pd.plotting.table(plt.gca(), top.iloc[rows_printed:rows_printed + rows_per_page],
-                                                 loc='upper center', colWidths=[0.2, 0.2, 0.2])
-
-        # Give you cells some styling
-        table_props = matplotlib_tab.properties()
-        table_cells = table_props['child_artists']  # I have no clue why child_artists works
-        for cell in table_cells:
-            cell.set_height(0.024)
-            cell.set_fontsize(12)
-
-        # Add a header and footer with page number
-        fig.text(4.25 / 8.5, 10.5 / 11., "Top errors", ha='center', fontsize=12)
-        fig.text(4.25 / 8.5, 0.5 / 11., 'A' + str(page_number), ha='center', fontsize=12)
-
-        pdf.savefig()
-        plt.clf()
-
-        # Update variables
-        rows_printed += rows_per_page
-        total_rows -= rows_per_page
-        page_number += 1
+    print_top(top)
     err_graph(top, data)
 
 #Hourly report
@@ -155,36 +166,6 @@ with PdfPages(hourly_r) as pdf:
 
     # Total converting to a table in PDF
 
-    total_rows, total_cols = top.shape  # There were 3 columns in my df
-
-    rows_per_page = 40  # Assign a page cut off length
-    rows_printed = 0
-    page_number = 1
-
-    while (total_rows > 0):
-        # put the table on a correctly sized figure
-        fig = plt.figure(figsize=(8.5, 11))
-        plt.gca().axis('off')
-        matplotlib_tab = pd.plotting.table(plt.gca(), top.iloc[rows_printed:rows_printed + rows_per_page],
-                                                 loc='upper center', colWidths=[0.2, 0.2, 0.2])
-
-        # Give you cells some styling
-        table_props = matplotlib_tab.properties()
-        table_cells = table_props['child_artists']  # I have no clue why child_artists works
-        for cell in table_cells:
-            cell.set_height(0.024)
-            cell.set_fontsize(12)
-
-        # Add a header and footer with page number
-        fig.text(4.25 / 8.5, 10.5 / 11., "Top errors", ha='center', fontsize=12)
-        fig.text(4.25 / 8.5, 0.5 / 11., 'A' + str(page_number), ha='center', fontsize=12)
-
-        pdf.savefig()
-        plt.clf()
-
-        # Update variables
-        rows_printed += rows_per_page
-        total_rows -= rows_per_page
-        page_number += 1
+    print_top(top)
     # Plotting and saving top graphics into PDF
     err_graph(top,data)
