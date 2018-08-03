@@ -10,18 +10,20 @@ hourly = ('~/Desktop/p_report/csv/hourly.csv')
 daily_r = ('C:/Users/313457/Desktop/p_report/Daily report.pdf')
 hourly_r = ('C:/Users/313457/Desktop/p_report/Hourly report.pdf')
 
+
 # Main graph
-def main_to_pdf(data,period):
+def main_to_pdf(data, period):
     data.plot(linestyle='-', marker='o', figsize=(30, 15))
     plt.rcParams['axes.formatter.useoffset'] = False
     plt.xticks(data.index.values, data['time'], rotation=60)
     plt.grid()
     plt.axhline(y=0, color='k')
     plt.axvline(x=0, color='k')
-    plt.title('Errors during last '+ period)
+    plt.title('Errors during last ' + period)
     pdf.savefig()
     plt.clf()
-    return(0)
+    return (0)
+
 
 # Total converting to a table in PDF
 def print_top(top):
@@ -56,10 +58,11 @@ def print_top(top):
         rows_printed += rows_per_page
         total_rows -= rows_per_page
         page_number += 1
-    return(0)
+    return (0)
+
 
 # Plotting and saving top graphics into PDF
-def err_graph(top,data):
+def err_graph(top, data):
     error = 0
     while error < 10:
         i = top.index[error]
@@ -72,7 +75,8 @@ def err_graph(top,data):
         error = error + 1
         plt.clf()
 
-    return(0)
+    return (0)
+
 
 # Daily report start
 data = pd.read_csv(daily)
@@ -103,12 +107,12 @@ top.index = top.index.map(str)
 period = '10 days'
 
 with PdfPages(daily_r) as pdf:
-    main_to_pdf(data,period)
-# Total converting to a table in PDF
+    main_to_pdf(data, period)
+    # Total converting to a table in PDF
     print_top(top)
     err_graph(top, data)
 
-#Hourly report
+# Hourly report
 data = pd.read_csv(hourly)
 
 # Date reformatting
@@ -130,9 +134,9 @@ top.index = top.index.map(str)
 # Hourly report
 period = '35 hours'
 with PdfPages(hourly_r) as pdf:
-    #Main graph
-    main_to_pdf(data,period)
+    # Main graph
+    main_to_pdf(data, period)
     # Total converting to a table in PDF
     print_top(top)
     # Plotting and saving top graphics into PDF
-    err_graph(top,data)
+    err_graph(top, data)
