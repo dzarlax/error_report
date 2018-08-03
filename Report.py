@@ -13,8 +13,8 @@ hourly = ('~/Desktop/p_report/csv/hourly.csv')
 
 # Where to save?
 
-#daily_r = ('~/Desktop/p_report/Daily report.pdf')
-#hourly_r = ('~/Desktop/p_report/Hourly report.pdf')
+daily_r = ('C:/Users/313457/Desktop/p_report/Daily report.pdf')
+hourly_r = ('C:/Users/313457/Desktop/p_report/Hourly report.pdf')
 
 # Daily report start
 data = pd.read_csv(daily)
@@ -39,9 +39,7 @@ data.set_index('time')
 
 top = data.sum(axis=0)
 type(top)
-top
 top = pd.Series.to_frame(top)
-top.sort_index
 top = top.drop(top.index[0])
 top = top.sort_values(by=0, ascending=False)
 top.index = top.index.map(str)
@@ -50,7 +48,8 @@ top.index = top.index.map(str)
 
 from matplotlib.backends.backend_pdf import PdfPages
 
-with PdfPages('Daily report.pdf') as pdf:
+#with PdfPages('Daily report.pdf') as pdf:
+with PdfPages(daily_r) as pdf:
     data.plot(linestyle='-', marker='o', figsize=(30, 15))
     plt.rcParams['axes.formatter.useoffset'] = False
     plt.xticks(data.index.values, data['time'], rotation=60)
@@ -64,17 +63,17 @@ with PdfPages('Daily report.pdf') as pdf:
 
 # Total converting to a table in PDF
 
-    total_rows, total_cols = top.shape;  # There were 3 columns in my df
+    total_rows, total_cols = top.shape  # There were 3 columns in my df
 
-    rows_per_page = 40;  # Assign a page cut off length
+    rows_per_page = 40  # Assign a page cut off length
     rows_printed = 0
-    page_number = 1;
+    page_number = 1
 
     while (total_rows > 0):
         # put the table on a correctly sized figure
         fig = plt.figure(figsize=(8.5, 11))
         plt.gca().axis('off')
-        matplotlib_tab = pd.tools.plotting.table(plt.gca(), top.iloc[rows_printed:rows_printed + rows_per_page],
+        matplotlib_tab = pd.plotting.table(plt.gca(), top.iloc[rows_printed:rows_printed + rows_per_page],
                                                  loc='upper center', colWidths=[0.2, 0.2, 0.2])
 
         # Give you cells some styling
@@ -92,16 +91,16 @@ with PdfPages('Daily report.pdf') as pdf:
         plt.clf()
 
         # Update variables
-        rows_printed += rows_per_page;
-        total_rows -= rows_per_page;
-        page_number += 1;
+        rows_printed += rows_per_page
+        total_rows -= rows_per_page
+        page_number += 1
 
 # Plotting and saving top graphics into PDF
 
     error = 0
     while error < 10:
         i = top.index[error]
-        data[i].plot(figsize=(20, 10));
+        data[i].plot(figsize=(20, 10))
         plt.xticks(data.index.values, data['time'], rotation=60)
         plt.title(i)
         plt.grid(True)
@@ -128,7 +127,6 @@ data.set_index('time')
 
 top = data.sum(axis=0)
 top = pd.Series.to_frame(top)
-top.sort_index
 top = top.drop(top.index[0])
 top = top.sort_values(by=0, ascending=False)
 top.index = top.index.map(str)
@@ -138,7 +136,8 @@ top.index = top.index.map(str)
 
 from matplotlib.backends.backend_pdf import PdfPages
 
-with PdfPages('Hourly report.pdf') as pdf:
+#with PdfPages('Hourly report.pdf') as pdf:
+with PdfPages(hourly_r) as pdf:
     data.plot(linestyle='-', marker='o', figsize=(30, 15))
     plt.rcParams['axes.formatter.useoffset'] = False
     plt.xticks(data.index.values, data['time'], rotation=60)
@@ -152,17 +151,17 @@ with PdfPages('Hourly report.pdf') as pdf:
 
     # Total converting to a table in PDF
 
-    total_rows, total_cols = top.shape;  # There were 3 columns in my df
+    total_rows, total_cols = top.shape  # There were 3 columns in my df
 
-    rows_per_page = 40;  # Assign a page cut off length
+    rows_per_page = 40  # Assign a page cut off length
     rows_printed = 0
-    page_number = 1;
+    page_number = 1
 
     while (total_rows > 0):
         # put the table on a correctly sized figure
         fig = plt.figure(figsize=(8.5, 11))
         plt.gca().axis('off')
-        matplotlib_tab = pd.tools.plotting.table(plt.gca(), top.iloc[rows_printed:rows_printed + rows_per_page],
+        matplotlib_tab = pd.plotting.table(plt.gca(), top.iloc[rows_printed:rows_printed + rows_per_page],
                                                  loc='upper center', colWidths=[0.2, 0.2, 0.2])
 
         # Give you cells some styling
@@ -180,16 +179,16 @@ with PdfPages('Hourly report.pdf') as pdf:
         plt.clf()
 
         # Update variables
-        rows_printed += rows_per_page;
-        total_rows -= rows_per_page;
-        page_number += 1;
+        rows_printed += rows_per_page
+        total_rows -= rows_per_page
+        page_number += 1
 
     # Plotting and saving top graphics into PDF
 
     error = 0
     while error < 10:
         i = top.index[error]
-        data[i].plot(figsize=(20, 10));
+        data[i].plot(figsize=(20, 10))
         plt.xticks(data.index.values, data['time'], rotation=60)
         plt.title(i)
         plt.grid(True)
