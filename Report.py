@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
+
 # Where are CSV files?
 daily = ('~/Desktop/p_report/csv/daily.csv')
 hourly = ('~/Desktop/p_report/csv/hourly.csv')
