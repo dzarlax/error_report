@@ -16,6 +16,23 @@ hourly = ('~/Desktop/p_report/csv/hourly.csv')
 daily_r = ('C:/Users/313457/Desktop/p_report/Daily report.pdf')
 hourly_r = ('C:/Users/313457/Desktop/p_report/Hourly report.pdf')
 
+
+# Plotting and saving top graphics into PDF
+def err_graph(top,data):
+    error = 0
+    while error < 10:
+        i = top.index[error]
+        data[i].plot(figsize=(20, 10))
+        plt.xticks(data.index.values, data['time'], rotation=60)
+        plt.title(i)
+        plt.grid(True)
+        plt.draw()
+        pdf.savefig()
+        error = error + 1
+        plt.clf()
+
+    return(0)
+
 # Daily report start
 data = pd.read_csv(daily)
 
@@ -94,20 +111,7 @@ with PdfPages(daily_r) as pdf:
         rows_printed += rows_per_page
         total_rows -= rows_per_page
         page_number += 1
-
-# Plotting and saving top graphics into PDF
-
-    error = 0
-    while error < 10:
-        i = top.index[error]
-        data[i].plot(figsize=(20, 10))
-        plt.xticks(data.index.values, data['time'], rotation=60)
-        plt.title(i)
-        plt.grid(True)
-        plt.draw()
-        pdf.savefig()
-        error = error + 1
-        plt.clf()
+    err_graph(top, data)
 
 #Hourly report
 
@@ -182,17 +186,5 @@ with PdfPages(hourly_r) as pdf:
         rows_printed += rows_per_page
         total_rows -= rows_per_page
         page_number += 1
-
     # Plotting and saving top graphics into PDF
-
-    error = 0
-    while error < 10:
-        i = top.index[error]
-        data[i].plot(figsize=(20, 10))
-        plt.xticks(data.index.values, data['time'], rotation=60)
-        plt.title(i)
-        plt.grid(True)
-        plt.draw()
-        pdf.savefig()
-        error = error + 1
-        plt.clf()
+    err_graph(top,data)
