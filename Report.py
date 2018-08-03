@@ -11,6 +11,11 @@ import matplotlib.ticker as ticker
 daily = ('~/Desktop/p_report/csv/daily.csv')
 hourly = ('~/Desktop/p_report/csv/hourly.csv')
 
+# Where to save?
+
+#daily_r = ('~/Desktop/p_report/Daily report.pdf')
+#hourly_r = ('~/Desktop/p_report/Hourly report.pdf')
+
 # Daily report start
 data = pd.read_csv(daily)
 
@@ -122,15 +127,12 @@ data.set_index('time')
 # Daily top counting
 
 top = data.sum(axis=0)
-type(top)
-top
 top = pd.Series.to_frame(top)
 top.sort_index
 top = top.drop(top.index[0])
-# top = top.append(pd.DataFrame(columns=[0], dtype=int))
 top = top.sort_values(by=0, ascending=False)
 top.index = top.index.map(str)
-# top.to_excel(excel_writer = 'C:/Users/313457/Desktop/p_report/top.xlsx')
+
 
 # Hourly report
 
@@ -138,7 +140,6 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 with PdfPages('Hourly report.pdf') as pdf:
     data.plot(linestyle='-', marker='o', figsize=(30, 15))
-    # plt.rcParams["figure.figsize"] = (30,15)
     plt.rcParams['axes.formatter.useoffset'] = False
     plt.xticks(data.index.values, data['time'], rotation=60)
     plt.grid()
