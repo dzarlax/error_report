@@ -1,16 +1,18 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+import datetime
 
+now = datetime.datetime.now()
 
 # Where are CSV files?
 daily = ('~/Desktop/p_report/csv/daily.csv')
 hourly = ('~/Desktop/p_report/csv/hourly.csv')
 
 # Where to save?
-daily_r = ('C:/Users/313457/Desktop/p_report/Daily report.pdf')
-hourly_r = ('C:/Users/313457/Desktop/p_report/Hourly report.pdf')
-
+daily_r = ('C:/Users/313457/Desktop/p_report/Daily report ' + now.strftime("%Y-%m-%d") + '.pdf')
+hourly_r = ('C:/Users/313457/Desktop/p_report/Hourly report ' + now.strftime("%Y-%m-%d") + '.pdf')
+print(daily_r)
 
 # Main graph
 def main_to_pdf(data, period):
@@ -21,6 +23,7 @@ def main_to_pdf(data, period):
     plt.axhline(y=0, color='k')
     plt.axvline(x=0, color='k')
     plt.title('Errors during last ' + period)
+    plt.suptitle(now.strftime("%Y-%m-%d %H:%M"))
     pdf.savefig()
     plt.clf()
     return (0)
