@@ -12,7 +12,6 @@ hourly = ('~/Desktop/p_report/csv/hourly.csv')
 # Where to save?
 daily_r = ('C:/Users/313457/Desktop/p_report/Daily report ' + now.strftime("%Y-%m-%d") + '.pdf')
 hourly_r = ('C:/Users/313457/Desktop/p_report/Hourly report ' + now.strftime("%Y-%m-%d") + '.pdf')
-print(daily_r)
 
 # Main graph
 def main_to_pdf(data, period):
