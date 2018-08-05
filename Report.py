@@ -16,7 +16,7 @@ hourly_r = ('C:/Users/313457/Desktop/p_report/Hourly report.pdf')
 def main_to_pdf(data, period):
     data.plot(linestyle='-', marker='o', figsize=(30, 15))
     plt.rcParams['axes.formatter.useoffset'] = False
-    plt.xticks(data.index.values, data['time'], rotation=60)
+    plt.xticks(range(len(data.index)), data.index, rotation=60)
     plt.grid()
     plt.axhline(y=0, color='k')
     plt.axvline(x=0, color='k')
@@ -68,7 +68,7 @@ def err_graph(top, data):
     while error < 10:
         i = top.index[error]
         data[i].plot(figsize=(20, 10))
-        plt.xticks(data.index.values, data['time'], rotation=60)
+        plt.xticks(range(len(data.index)), data.index, rotation=60)
         plt.title(i)
         plt.grid(True)
         plt.draw()
@@ -89,12 +89,14 @@ data['hour'] = data.hour.str.split('T').str.get(1)
 data['time'] = data['day']
 data = data.drop(['_time', 'day', 'hour'], axis=1)
 data = data[['time'] + data.columns[:-1].tolist()]
-data.set_index('time')
+data.set_index('time', inplace = True)
 
 # Date conversion
-# data.index = pd.to_datetime(data.index)
-# data.index = data.index.tz_localize(tz ='Etc/GMT+4')
-# data.index = data.index.tz_convert('Etc/GMT-3')
+#data.index = pd.to_datetime(data.index)
+#data.index = data.index.tz_localize(tz ='Etc/GMT+4')
+#data.index = data.index.tz_convert('Etc/GMT-3')
+#data.index = data.index.astype('str')
+
 
 # Daily top counting
 top = data.sum(axis=0)
@@ -123,7 +125,16 @@ data['hour'] = data.hour.str.split('T').str.get(1)
 data['time'] = data['day'] + ', ' + data['hour']
 data = data.drop(['_time', 'day', 'hour'], axis=1)
 data = data[['time'] + data.columns[:-1].tolist()]
-data.set_index('time')
+data.set_index('time', inplace = True)
+
+
+
+# Date conversion
+data.index = pd.to_datetime(data.index)
+data.index = data.index.tz_localize(tz ='Etc/GMT+4')
+data.index = data.index.tz_convert('Etc/GMT-3')
+data.index = data.index.astype('str')
+data.index = data.index.map(lambda x: str(x)[:-9])
 
 # Daily top counting
 top = data.sum(axis=0)
