@@ -1,5 +1,3 @@
-from typing import Dict, Any
-
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
@@ -10,10 +8,11 @@ now = datetime.datetime.now()
 # Where are CSV files?
 daily = ('~/Desktop/p_report/csv/daily (2).csv')
 hourly = ('~/Desktop/p_report/csv/hourly (2).csv')
-errors = pd.read_csv('~/Desktop/p_report/errors.csv', header=0, squeeze=False, delimiter = ';').to_dict('series')
+errors = pd.read_csv('~/Desktop/p_report/errors.csv', header=0, squeeze=False, delimiter=';').to_dict('series')
 # Where to save?
 daily_r = ('C:/Users/313457/Desktop/p_report/Daily report ' + now.strftime("%Y-%m-%d") + '.pdf')
 hourly_r = ('C:/Users/313457/Desktop/p_report/Hourly report ' + now.strftime("%Y-%m-%d") + '.pdf')
+
 
 # Main graph
 def main_to_pdf(data, period):
@@ -50,7 +49,7 @@ def print_top(top):
         table_cells = table_props['child_artists']  # I have no clue why child_artists works
         for cell in table_cells:
             cell.set_height(0.02)
-            cell.set_fontsize(16)
+            cell.set_fontsize(20)
 
         # Add a header and footer with page number
         fig.text(4.25 / 8.5, 10.5 / 11., "Top errors", ha='center', fontsize=16)
@@ -71,7 +70,7 @@ def err_graph(top, data):
     error = 0
     while error < 10:
         i = top.index[error]
-        data[i].plot(figsize=(20, 10))
+        data[i].plot(figsize=(20, 15))
         plt.xticks(range(len(data.index)), data.index, rotation=60)
         plt.title(errors[i])
         plt.grid(True)
@@ -93,13 +92,13 @@ data['hour'] = data.hour.str.split('T').str.get(1)
 data['time'] = data['day']
 data = data.drop(['_time', 'day', 'hour'], axis=1)
 data = data[['time'] + data.columns[:-1].tolist()]
-data.set_index('time', inplace = True)
+data.set_index('time', inplace=True)
 
 # Date conversion
-#data.index = pd.to_datetime(data.index)
-#data.index = data.index.tz_localize(tz ='Etc/GMT+4')
-#data.index = data.index.tz_convert('Etc/GMT-3')
-#data.index = data.index.astype('str')
+# data.index = pd.to_datetime(data.index)
+# data.index = data.index.tz_localize(tz ='Etc/GMT+4')
+# data.index = data.index.tz_convert('Etc/GMT-3')
+# data.index = data.index.astype('str')
 
 
 # Daily top counting
@@ -109,7 +108,7 @@ top = pd.Series.to_frame(top)
 top = top.drop(top.index[0])
 top = top.sort_values(by=0, ascending=False)
 top.index = top.index.map(str)
-errors_df=pd.DataFrame.from_dict(errors, orient='index')
+errors_df = pd.DataFrame.from_dict(errors, orient='index')
 top = top.join(errors_df, how='left', lsuffix='Number of errors', rsuffix='Name of errors')
 
 # Daily report
@@ -131,23 +130,23 @@ data['hour'] = data.hour.str.split('T').str.get(1)
 data['time'] = data['day'] + ', ' + data['hour']
 data = data.drop(['_time', 'day', 'hour'], axis=1)
 data = data[['time'] + data.columns[:-1].tolist()]
-data.set_index('time', inplace = True)
-
-
+data.set_index('time', inplace=True)
 
 # Date conversion
 data.index = pd.to_datetime(data.index)
-data.index = data.index.tz_localize(tz ='Etc/GMT+4')
+data.index = data.index.tz_localize(tz='Etc/GMT+4')
 data.index = data.index.tz_convert('Etc/GMT-3')
 data.index = data.index.astype('str')
 data.index = data.index.map(lambda x: str(x)[:-9])
 
-# Daily top counting
+# Hourly top counting
 top = data.sum(axis=0)
 top = pd.Series.to_frame(top)
 top = top.drop(top.index[0])
 top = top.sort_values(by=0, ascending=False)
 top.index = top.index.map(str)
+errors_df = pd.DataFrame.from_dict(errors, orient='index')
+top = top.join(errors_df, how='left', lsuffix='Number of errors', rsuffix='Name of errors')
 
 # Hourly report
 period = '35 hours'
