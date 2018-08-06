@@ -2,7 +2,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import datetime
-
+import plotly.offline as offline
+from plotly.offline.offline import _plot_html
+import cufflinks as cf
 now = datetime.datetime.now()
 
 # Where are CSV files?
@@ -25,6 +27,7 @@ def main_to_pdf(data, period):
     plt.title('Errors during last ' + period)
     plt.suptitle(now.strftime("%Y-%m-%d %H:%M"))
     pdf.savefig()
+    offline.plot(data.iplot(asFigure=True, kind='line', title='Plotly Pandas', dimensions=(1800, 1000)), filename='C:/Users/313457/Desktop/p_report/ Main ' + period +' ' + now.strftime("%Y-%m-%d") +'.html', auto_open=False)
     plt.clf()
     return (0)
 
