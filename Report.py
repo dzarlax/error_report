@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
@@ -6,9 +8,9 @@ import datetime
 now = datetime.datetime.now()
 
 # Where are CSV files?
-daily = ('~/Desktop/p_report/csv/daily.csv')
-hourly = ('~/Desktop/p_report/csv/hourly.csv')
-
+daily = ('~/Desktop/p_report/csv/daily (2).csv')
+hourly = ('~/Desktop/p_report/csv/hourly (2).csv')
+errors = pd.read_csv('~/Desktop/p_report/errors.csv', header=0, squeeze=False, delimiter = ';').to_dict('series')
 # Where to save?
 daily_r = ('C:/Users/313457/Desktop/p_report/Daily report ' + now.strftime("%Y-%m-%d") + '.pdf')
 hourly_r = ('C:/Users/313457/Desktop/p_report/Hourly report ' + now.strftime("%Y-%m-%d") + '.pdf')
@@ -32,26 +34,26 @@ def main_to_pdf(data, period):
 def print_top(top):
     total_rows, total_cols = top.shape  # There were 3 columns in my df
 
-    rows_per_page = 40  # Assign a page cut off length
+    rows_per_page = 60  # Assign a page cut off length
     rows_printed = 0
     page_number = 1
 
     while (total_rows > 0):
         # put the table on a correctly sized figure
-        fig = plt.figure(figsize=(8.5, 11))
+        fig = plt.figure(figsize=(20, 40))
         plt.gca().axis('off')
         matplotlib_tab = pd.plotting.table(plt.gca(), top.iloc[rows_printed:rows_printed + rows_per_page],
-                                           loc='upper center', colWidths=[0.2, 0.2, 0.2])
+                                           loc='upper center', colWidths=None)
 
         # Give you cells some styling
         table_props = matplotlib_tab.properties()
         table_cells = table_props['child_artists']  # I have no clue why child_artists works
         for cell in table_cells:
-            cell.set_height(0.024)
-            cell.set_fontsize(12)
+            cell.set_height(0.02)
+            cell.set_fontsize(16)
 
         # Add a header and footer with page number
-        fig.text(4.25 / 8.5, 10.5 / 11., "Top errors", ha='center', fontsize=12)
+        fig.text(4.25 / 8.5, 10.5 / 11., "Top errors", ha='center', fontsize=16)
         fig.text(4.25 / 8.5, 0.5 / 11., 'A' + str(page_number), ha='center', fontsize=12)
 
         pdf.savefig()
@@ -71,7 +73,7 @@ def err_graph(top, data):
         i = top.index[error]
         data[i].plot(figsize=(20, 10))
         plt.xticks(range(len(data.index)), data.index, rotation=60)
-        plt.title(i)
+        plt.title(errors[i])
         plt.grid(True)
         plt.draw()
         pdf.savefig()
@@ -107,6 +109,8 @@ top = pd.Series.to_frame(top)
 top = top.drop(top.index[0])
 top = top.sort_values(by=0, ascending=False)
 top.index = top.index.map(str)
+errors_df=pd.DataFrame.from_dict(errors, orient='index')
+top = top.join(errors_df, how='left', lsuffix='Number of errors', rsuffix='Name of errors')
 
 # Daily report
 period = '10 days'
