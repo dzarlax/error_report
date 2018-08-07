@@ -13,17 +13,17 @@ import win32com.client as win32
 now = datetime.datetime.now()
 
 # Where are CSV files?
-daily = ('~/Desktop/p_report/csv/daily.csv')
-hourly = ('~/Desktop/p_report/csv/hourly.csv')
-errors = pd.read_csv('~/Desktop/p_report/errors.csv', header=0, squeeze=False, delimiter=';').to_dict('series')
+daily = ('~/Desktop/p_report/source/csv/daily.csv')
+hourly = ('~/Desktop/p_report/source/csv/hourly.csv')
+errors = pd.read_csv('~/Desktop/p_report/source/errors.csv', header=0, squeeze=False, delimiter=';').to_dict('series')
 # Where to save?
 if not os.path.isdir('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d")):
     os.makedirs('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d"))
+if not os.path.isdir('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d")+ '/data/'):
+    os.makedirs('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d")+ '/data/')
+daily_r = ('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d") + '/data/'+ '/Daily.pdf')
 
-daily_r = ('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d") + '/Daily report ' + now.strftime(
-    "%Y-%m-%d") + '.pdf')
-hourly_r = ('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d") + '/Hourly report ' + now.strftime(
-    "%Y-%m-%d") + '.pdf')
+hourly_r = ('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d") +'/data/'+ '/Hourly.pdf')
 
 
 # Main graph
@@ -38,13 +38,13 @@ def main_to_pdf(data, period):
     plt.suptitle(now.strftime("%Y-%m-%d %H:%M"))
     pdf.savefig()
     layout = dict(hovermode='closest',
-                  title=period,
+                  title=name,
                   hoverlabel=dict(
                       bgcolor='black', ),
-                  )
-    offline.plot(data.iplot(asFigure=True, layout=layout, kind='line', title=period, dimensions=(1800, 1000)),
+                  autosize = True)
+    offline.plot(data.iplot(asFigure=True, layout=layout, kind='line', title=period),
                  filename='C:/Users/313457/Desktop/p_report/' + now.strftime(
-                     "%Y-%m-%d") + '/ Main ' + period + ' ' + now.strftime("%Y-%m-%d") + '.html', auto_open=False)
+                     "%Y-%m-%d") + '/data/' + name + '.html', auto_open=False)
     plt.clf()
     return (0)
 
@@ -97,8 +97,12 @@ def err_graph(top, data):
         plt.draw()
         pdf.savefig()
         error = error + 1
+        '''
+        offline.plot(data[i].iplot(asFigure=True, title = i, kind='line', dimensions=(1800, 1000)),
+                     filename='C:/Users/313457/Desktop/p_report/' + now.strftime(
+                         "%Y-%m-%d") + '/' + i + '.html', auto_open=False)
         plt.clf()
-
+        '''
     return (0)
 
 
@@ -133,13 +137,13 @@ top = top.join(errors_df, how='left', lsuffix='Number of errors', rsuffix='Name 
 
 # Daily report
 period = '10 days'
-
+name = 'Daily'
 with PdfPages(daily_r) as pdf:
     main_to_pdf(data, period)
     # Total converting to a table in PDF
     print_top(top)
     err_graph(top, data)
-
+top_daily = top
 # Hourly report
 data = pd.read_csv(hourly)
 
@@ -170,6 +174,7 @@ top = top.join(errors_df, how='left', lsuffix='Number of errors', rsuffix='Name 
 
 # Hourly report
 period = '35 hours'
+name = 'Hourly'
 with PdfPages(hourly_r) as pdf:
     # Main graph
     main_to_pdf(data, period)
@@ -180,10 +185,10 @@ with PdfPages(hourly_r) as pdf:
 
 
 # Zip resulted file
-shutil.make_archive('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d"), 'zip',
-                    'C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d"))
-
-
+#shutil.make_archive('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d"), 'zip',
+#                    'C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d"))
+#Send file via Outlook
+'''
 outlook = win32.Dispatch('outlook.application')
 mail = outlook.CreateItem(0)
 mail.To = 'Andrey.Kulagin@westernunion.ru; Vadim.Grekov@westernunion.ru '
@@ -196,3 +201,20 @@ attachment  = 'C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d") +'.
 mail.Attachments.Add(attachment)
 
 mail.Send()
+'''
+
+f = open('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d")+'/Report.html','w')
+files = os.listdir('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d")+ '/data/')
+i=0
+#files ='<br>'.join(list_of_files)
+while i < len(files):
+    files[i]=str('<p><a href=' + 'data/' + files[i]  + '>' + files[i] + '</a></p>')
+    i += 1
+files =''.join(files)
+message = str(("<html>\n"
+           "<head></head>\n"
+           "<body>" + files + "</body>\n"
+           "</html>"))
+
+f.write(message)
+f.close()
