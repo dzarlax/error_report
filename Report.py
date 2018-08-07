@@ -3,9 +3,10 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import datetime
 import plotly.offline as offline
-import plotly.graph_objs as go
-from plotly.offline.offline import _plot_html
+#import plotly.graph_objs as go
+#from plotly.offline.offline import _plot_html
 import cufflinks as cf
+import shutil
 import os
 
 now = datetime.datetime.now()
@@ -36,7 +37,7 @@ def main_to_pdf(data, period):
     plt.suptitle(now.strftime("%Y-%m-%d %H:%M"))
     pdf.savefig()
     layout = dict(hovermode='closest',
-                  title = period,
+                  title=period,
                   hoverlabel=dict(
                       bgcolor='black', ),
                   )
@@ -175,3 +176,8 @@ with PdfPages(hourly_r) as pdf:
     print_top(top)
     # Plotting and saving top graphics into PDF
     err_graph(top, data)
+
+
+
+shutil.make_archive('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d"), 'zip',
+                    'C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d"))
