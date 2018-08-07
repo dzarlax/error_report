@@ -178,6 +178,6 @@ with PdfPages(hourly_r) as pdf:
     err_graph(top, data)
 
 
-
+# Zip resulted file
 shutil.make_archive('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d"), 'zip',
                     'C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d"))
