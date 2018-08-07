@@ -8,6 +8,7 @@ import plotly.offline as offline
 import cufflinks as cf
 import shutil
 import os
+import win32com.client as win32
 
 now = datetime.datetime.now()
 
@@ -181,3 +182,17 @@ with PdfPages(hourly_r) as pdf:
 # Zip resulted file
 shutil.make_archive('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d"), 'zip',
                     'C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d"))
+
+
+outlook = win32.Dispatch('outlook.application')
+mail = outlook.CreateItem(0)
+mail.To = 'Andrey.Kulagin@westernunion.ru; Vadim.Grekov@westernunion.ru '
+mail.Subject = 'Error Report'
+mail.Body = 'Daily and hourly error report'
+#mail.HTMLBody = '<h2>HTML Message body</h2>' #this field is optional
+
+# To attach a file to the email (optional):
+attachment  = 'C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d") +'.zip'
+mail.Attachments.Add(attachment)
+
+mail.Send()
