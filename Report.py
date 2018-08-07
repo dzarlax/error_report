@@ -3,17 +3,22 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import datetime
 import plotly.offline as offline
+import plotly.graph_objs as go
 from plotly.offline.offline import _plot_html
 import cufflinks as cf
+import os
 now = datetime.datetime.now()
 
 # Where are CSV files?
-daily = ('~/Desktop/p_report/csv/daily (2).csv')
-hourly = ('~/Desktop/p_report/csv/hourly (2).csv')
+daily = ('~/Desktop/p_report/csv/daily.csv')
+hourly = ('~/Desktop/p_report/csv/hourly.csv')
 errors = pd.read_csv('~/Desktop/p_report/errors.csv', header=0, squeeze=False, delimiter=';').to_dict('series')
 # Where to save?
-daily_r = ('C:/Users/313457/Desktop/p_report/Daily report ' + now.strftime("%Y-%m-%d") + '.pdf')
-hourly_r = ('C:/Users/313457/Desktop/p_report/Hourly report ' + now.strftime("%Y-%m-%d") + '.pdf')
+if not os.path.isdir('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d")):
+   os.makedirs('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d"))
+
+daily_r = ('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d") + '/Daily report ' + now.strftime("%Y-%m-%d") + '.pdf')
+hourly_r = ('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d") + '/Hourly report ' + now.strftime("%Y-%m-%d") + '.pdf')
 
 
 # Main graph
@@ -27,7 +32,11 @@ def main_to_pdf(data, period):
     plt.title('Errors during last ' + period)
     plt.suptitle(now.strftime("%Y-%m-%d %H:%M"))
     pdf.savefig()
-    offline.plot(data.iplot(asFigure=True, kind='line', title='Plotly Pandas', dimensions=(1800, 1000)), filename='C:/Users/313457/Desktop/p_report/ Main ' + period +' ' + now.strftime("%Y-%m-%d") +'.html', auto_open=False)
+    layout = dict(hovermode='closest',
+                  hoverlabel=dict(
+                      bgcolor = 'black',),
+                  )
+    offline.plot(data.iplot(asFigure=True,layout=layout, kind='line', title=period, dimensions=(1800, 1000)), filename='C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d") + '/ Main ' + period +' ' + now.strftime("%Y-%m-%d") +'.html', auto_open=False)
     plt.clf()
     return (0)
 
