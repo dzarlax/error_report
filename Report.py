@@ -2,28 +2,26 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import datetime
-import plotly.offline as offline
-#import plotly.graph_objs as go
-#from plotly.offline.offline import _plot_html
+from plotly.offline import init_notebook_mode, plot, iplot
 import cufflinks as cf
-import shutil
+#import shutil
 import os
-import win32com.client as win32
+init_notebook_mode()
 
 now = datetime.datetime.now()
-
 # Where are CSV files?
-daily = ('~/Desktop/p_report/source/csv/daily.csv')
-hourly = ('~/Desktop/p_report/source/csv/hourly.csv')
-errors = pd.read_csv('~/Desktop/p_report/source/errors.csv', header=0, squeeze=False, delimiter=';').to_dict('series')
+daily = ('V:/Common Information/Digital/Reports/Error reports/source/csv/daily.csv')
+hourly = ('V:/Common Information/Digital/Reports/Error reports/source/csv/hourly.csv')
+errors = pd.read_csv('V:/Common Information/Digital/Reports/Error reports/source/errors.csv', header=0, squeeze=False, delimiter=';').to_dict('series')
 # Where to save?
-if not os.path.isdir('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d")):
-    os.makedirs('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d"))
-if not os.path.isdir('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d")+ '/data/'):
-    os.makedirs('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d")+ '/data/')
-daily_r = ('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d") + '/data/'+ '/Daily.pdf')
+report_place =str('V:/Common Information/Digital/Reports/Error reports/' + now.strftime("%Y-%m-%d"))
+if not os.path.isdir(report_place):
+    os.makedirs(report_place)
+if not os.path.isdir(report_place + '/data/'):
+    os.makedirs(report_place + '/data/')
+daily_r = (report_place + '/data/'+ '/Daily.pdf')
 
-hourly_r = ('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d") +'/data/'+ '/Hourly.pdf')
+hourly_r = (report_place +'/data/'+ '/Hourly.pdf')
 
 
 # Main graph
@@ -42,9 +40,8 @@ def main_to_pdf(data, period):
                   hoverlabel=dict(
                       bgcolor='black', ),
                   autosize = True)
-    offline.plot(data.iplot(asFigure=True, layout=layout, kind='line', title=period),
-                 filename='C:/Users/313457/Desktop/p_report/' + now.strftime(
-                     "%Y-%m-%d") + '/data/' + name + '.html', auto_open=False)
+    plot(data.iplot(asFigure=True, layout=layout, kind='line', title=period),
+                 filename=report_place + '/data/' + name + '.html', auto_open=False)
     plt.clf()
     return (0)
 
@@ -99,8 +96,7 @@ def err_graph(top, data):
         error = error + 1
         '''
         offline.plot(data[i].iplot(asFigure=True, title = i, kind='line', dimensions=(1800, 1000)),
-                     filename='C:/Users/313457/Desktop/p_report/' + now.strftime(
-                         "%Y-%m-%d") + '/' + i + '.html', auto_open=False)
+                     filename=report_place + '/' + i + '.html', auto_open=False)
         plt.clf()
         '''
     return (0)
@@ -185,26 +181,11 @@ with PdfPages(hourly_r) as pdf:
 
 
 # Zip resulted file
-#shutil.make_archive('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d"), 'zip',
-#                    'C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d"))
-#Send file via Outlook
-'''
-outlook = win32.Dispatch('outlook.application')
-mail = outlook.CreateItem(0)
-mail.To = 'Andrey.Kulagin@westernunion.ru; Vadim.Grekov@westernunion.ru '
-mail.Subject = 'Error Report'
-mail.Body = 'Daily and hourly error report'
-#mail.HTMLBody = '<h2>HTML Message body</h2>' #this field is optional
+#shutil.make_archive(report_place), 'zip', reportplace)
 
-# To attach a file to the email (optional):
-attachment  = 'C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d") +'.zip'
-mail.Attachments.Add(attachment)
 
-mail.Send()
-'''
-
-f = open('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d")+'/Report.html','w')
-files = os.listdir('C:/Users/313457/Desktop/p_report/' + now.strftime("%Y-%m-%d")+ '/data/')
+f = open(report_place+'/Report.html','w')
+files = os.listdir(report_place + '/data/')
 i=0
 #files ='<br>'.join(list_of_files)
 while i < len(files):
