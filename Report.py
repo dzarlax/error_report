@@ -184,6 +184,7 @@ with PdfPages(hourly_r) as pdf:
 #shutil.make_archive(report_place), 'zip', reportplace)
 
 
+
 f = open(report_place+'/Report.html','w')
 files = os.listdir(report_place + '/data/')
 i=0
@@ -194,7 +195,7 @@ while i < len(files):
 files =''.join(files)
 message = str(("<html>\n"
            "<head></head>\n"
-           "<body>" + files + "</body>\n"
+           "<body>" + files + "<br></body>\n"
            "</html>"))
 
 f.write(message)
