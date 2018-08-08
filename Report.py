@@ -12,7 +12,7 @@ now = datetime.datetime.now()
 # Where are CSV files?
 daily = ('V:/Common Information/Digital/Reports/Error reports/source/csv/daily.csv')
 hourly = ('V:/Common Information/Digital/Reports/Error reports/source/csv/hourly.csv')
-errors = pd.read_csv('V:/Common Information/Digital/Reports/Error reports/source/errors.csv', header=0, squeeze=False, delimiter=';').to_dict('series')
+errors = {row[0] : row[1] for _, row in pd.read_csv("V:/Common Information/Digital/Reports/Error reports/source/errors.csv",delimiter=';').iterrows()}
 # Where to save?
 report_place =str('V:/Common Information/Digital/Reports/Error reports/' + now.strftime("%Y-%m-%d"))
 if not os.path.isdir(report_place):
@@ -130,7 +130,8 @@ top = top.sort_values(by=0, ascending=False)
 top.index = top.index.map(str)
 errors_df = pd.DataFrame.from_dict(errors, orient='index')
 top = top.join(errors_df, how='left', lsuffix='Number of errors', rsuffix='Name of errors')
-
+top = top.rename(index=str, columns={"0Number of errors": "Number of errors", "0Name of errors": "Name of errors"})
+print(top)
 # Daily report
 period = '10 days'
 name = 'Daily'
