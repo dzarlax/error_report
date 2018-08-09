@@ -131,7 +131,7 @@ top.index = top.index.map(str)
 errors_df = pd.DataFrame.from_dict(errors, orient='index')
 top = top.join(errors_df, how='left', lsuffix='Number of errors', rsuffix='Name of errors')
 top = top.rename(index=str, columns={"0Number of errors": "Number of errors", "0Name of errors": "Name of errors"})
-print(top)
+
 # Daily report
 period = '10 days'
 name = 'Daily'
