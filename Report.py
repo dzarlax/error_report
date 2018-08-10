@@ -6,6 +6,7 @@ from plotly.offline import init_notebook_mode, plot, iplot
 import cufflinks as cf
 #import shutil
 import os
+import win32com.client as win32
 init_notebook_mode()
 
 now = datetime.datetime.now()
@@ -97,8 +98,9 @@ def err_graph(top, data):
         '''
         offline.plot(data[i].iplot(asFigure=True, title = i, kind='line', dimensions=(1800, 1000)),
                      filename=report_place + '/' + i + '.html', auto_open=False)
-        plt.clf()
         '''
+        plt.clf()
+
     return (0)
 
 
@@ -201,3 +203,11 @@ message = str(("<html>\n"
 
 f.write(message)
 f.close()
+
+outlook = win32.Dispatch('outlook.application')
+mail = outlook.CreateItem(0)
+mail.To = 'aleksey.panfilov@westernunion.ru; Andrey.Kulagin@westernunion.ru; Vadim.Grekov@westernunion.ru '
+mail.Subject = 'Error report'
+mail.Body = 'Report is ready!'
+mail.HTMLBody = '<h2><p><a href=V:/Common%20Information/Digital/Reports/Error%20reports/' + now.strftime("%Y-%m-%d") + '/Report.html>Read report</a></p></h2>'
+mail.Send()
