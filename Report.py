@@ -11,8 +11,12 @@ init_notebook_mode()
 
 now = datetime.datetime.now()
 # Where are CSV files?
+#From Splunk
 daily = ('V:/Common Information/Digital/Reports/Error reports/source/csv/daily.csv')
 hourly = ('V:/Common Information/Digital/Reports/Error reports/source/csv/hourly.csv')
+daily_countries = ('V:/Common Information/Digital/Reports/Error reports/source/csv/daily_countries.csv')
+avg = pd.read_csv('V:/Common Information/Digital/Reports/Error reports/source/csv/avg.csv',delimiter=',', header = 0)
+# From Excel
 errors = {row[0] : row[1] for _, row in pd.read_csv("V:/Common Information/Digital/Reports/Error reports/source/errors.csv",delimiter=';').iterrows()}
 # Where to save?
 report_place =str('V:/Common Information/Digital/Reports/Error reports/' + now.strftime("%Y-%m-%d"))
@@ -42,7 +46,14 @@ def main_to_pdf(data, period):
                       bgcolor='black', ),
                   autosize = True)
     plot(data.iplot(asFigure=True, layout=layout, kind='line', title=period),
-                 filename=report_place + '/data/' + name + '.html', auto_open=False)
+        filename=report_place + '/data/' + name + '.html', auto_open=False)
+    layout2 = dict(hovermode='closest',
+                  title=name,
+                  hoverlabel=dict(
+                      bgcolor='black', ),
+                  autosize=True)
+    plot(data.iplot(asFigure=True, layout=layout2, kind='box', title=period),
+        filename=report_place + '/data/' + name + '(box).html', auto_open=False)
     plt.clf()
     return (0)
 
@@ -106,7 +117,7 @@ def err_graph(top, data):
 
 # Daily report start
 data = pd.read_csv(daily)
-
+daily_countries=pd.read_csv(daily_countries)
 # Date reformatting
 data['day'] = data._time.str.split('T').str.get(0)
 data['hour'] = data._time.str.split(':00.000-0400').str.get(0)
@@ -116,6 +127,23 @@ data = data.drop(['_time', 'day', 'hour'], axis=1)
 data = data[['time'] + data.columns[:-1].tolist()]
 data.set_index('time', inplace=True)
 
+daily_countries['day'] = daily_countries._time.str.split('T').str.get(0)
+daily_countries['hour'] = daily_countries._time.str.split(':00.000-0400').str.get(0)
+daily_countries['hour'] = daily_countries.hour.str.split('T').str.get(1)
+daily_countries['time'] = daily_countries['day']
+daily_countries = daily_countries.drop(['_time', 'day', 'hour'], axis=1)
+daily_countries = daily_countries[['time'] + daily_countries.columns[:-1].tolist()]
+daily_countries.set_index('time', inplace=True)
+
+avg['day'] = avg._time.str.split('T').str.get(0)
+avg['hour'] = avg._time.str.split(':00.000-0400').str.get(0)
+avg['hour'] = avg.hour.str.split('T').str.get(1)
+avg['date'] = avg['day']
+avg = avg.drop(['_time', 'day', 'hour'], axis=1)
+avg = avg[['date'] + avg.columns[:-1].tolist()]
+avg.set_index('date', inplace=True)
+avg = avg/100
+avg = avg.round()
 # Date conversion
 # data.index = pd.to_datetime(data.index)
 # data.index = data.index.tz_localize(tz ='Etc/GMT+4')
@@ -137,6 +165,19 @@ top = top.rename(index=str, columns={"0Number of errors": "Number of errors", "0
 # Daily report
 period = '10 days'
 name = 'Daily'
+layout = dict(hovermode='closest',
+                  title=name,
+                  hoverlabel=dict(
+                      bgcolor='black', ),
+                  autosize = True)
+plot(daily_countries.iplot(asFigure=True, layout=layout, kind='line', title=period),
+        filename=report_place + '/data/' + name + 'Countries.html', auto_open=False)
+plot(daily_countries.iplot(asFigure=True, layout=layout, kind='box', title=period),
+        filename=report_place + '/data/' + name + 'Countries(Box).html', auto_open=False)
+plot(avg.iplot(asFigure=True, layout=layout, kind='line', title=period),
+        filename=report_place + '/data/' + name + 'Average.html', auto_open=False)
+plot(avg.iplot(asFigure=True, layout=layout, kind='box', title=period),
+        filename=report_place + '/data/' + name + 'Average(Box).html', auto_open=False)
 with PdfPages(daily_r) as pdf:
     main_to_pdf(data, period)
     # Total converting to a table in PDF
